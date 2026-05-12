@@ -18,65 +18,37 @@ To write a program to predict the type of species of the Iris flower using the S
 Program to implement the prediction of iris species using SGD Classifier.
 Developed by: Ashwin V
 RegisterNumber:212225040034
- import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import SGDClassifier
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, classification_report
 
-data = pd.read_csv("Placement_Data (1).csv")
-
-data['status'] = data['status'].map({'Placed': 1, 'Not Placed': 0})
-
-X = data[['ssc_p', 'mba_p']].values
-y = data['status'].values
-
+iris = load_iris()
+X = iris.data
+y = iris.target
 
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
-m = len(y)
-X = np.c_[np.ones(m), X]
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
 
+model = SGDClassifier(max_iter=1000, random_state=42)
 
-def sigmoid(z):
-    return 1 / (1 + np.exp(-z))
+model.fit(X_train, y_train)
 
+y_pred = model.predict(X_test)
 
-def cost_function(X, y, theta):
-    h = sigmoid(X @ theta)
-    return (-1/m) * np.sum(y*np.log(h) + (1-y)*np.log(1-h))
+print("Accuracy:", accuracy_score(y_test, y_pred))
 
-
-theta = np.zeros(X.shape[1])
-alpha = 0.1
-cost_history = []
-
-for i in range(500):
-    z = X @ theta
-    h = sigmoid(z)
-    gradient = (1/m) * X.T @ (h - y)
-    theta = theta - alpha * gradient
-    
-    cost = cost_function(X, y, theta)
-    cost_history.append(cost)
-
-y_pred = (sigmoid(X @ theta) >= 0.5).astype(int)
-
-accuracy = np.mean(y_pred == y) * 100
-print("Weights:", theta)
-print("Accuracy:", accuracy, "%")
-
-plt.figure()
-plt.plot(cost_history)
-plt.xlabel("Iterations")
-plt.ylabel("Cost")
-plt.title("Logistic Regression using Gradient Descent")
-plt.show() 
-
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
 ```
 
 ## Output:
-<img width="752" height="601" alt="image" src="https://github.com/user-attachments/assets/20896af5-32d2-4f70-90dd-3b3bfdc67459" />
+<img width="655" height="267" alt="image" src="https://github.com/user-attachments/assets/4109c102-55eb-4771-995a-9c20a4fe7c45" />
 
 
 
